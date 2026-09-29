@@ -1,11 +1,17 @@
+import json
+
 rejected =0
 state = 0
 delivery = 0
 totaltax=0
+INVENTORY_FILE= "orders.json"
+FIELD_SEPARATOR = ","
+HISTORY_SEPARATOR = "|"
+
 def load_inventory():
     try:
-        with open("orders.txt", "r") as file:
-            inventory = file.read().splitlines()
+        with open(INVENTORY_FILE, "r") as file:
+            inventory = json.load(file)
             return inventory
     except FileNotFoundError:
         return []    
@@ -66,16 +72,26 @@ def generate_report(delivery, rejected, totaltax):
     print(f"Number of Rejected Entries: {rejected}")
     print(f"Estimated Tax on Delivery: {totaltax:.2f}")
 
-
+def inventory_check(inventory, product_name, stock_number):
+    exists= False
+    for item in inventory:
+        if item["name"] == product_name:
+            item["stock"]+= stock_number
+            item["history"].append(stock_number)
+            exists = True
+            return inventory
+    if exists == False:
+        newitem = dict(id= 1000+len(inventory), name=product_name, stock=stock_number, history=[stock_number])
+        inventory.append(newitem)
+        print(f"New Order Added: {newitem["name"]}")
+        return inventory
+    
 def save_inventory(inventory):
-    with open("orders.txt", "w") as file:
-        for item in inventory:
-            file.write(f"{item}\n")
-    print("Orders saved to orders.txt successfully.")
+    with open(INVENTORY_FILE, "w") as file:
+        json.dump(inventory, file, indent = 4)
+        print(f"Orders saved to {INVENTORY_FILE} successfully.")
 
 inventory = load_inventory()
-delivery = sum(int(x.strip()) for x in inventory[2::3])  # Sum the quantities from the inventory list
-totaltax=calculate_tax(delivery)
 while state != -1:   
     product_name, stock_number, state = get_valid_input()
     
@@ -85,12 +101,7 @@ while state != -1:
 
     # Process running delivery total
     else:
-        if product_name in inventory:
-            inventory[inventory.index(product_name)+1] += stock_number
-        else:
-            inventory.append(f"100{len(inventory)//3}")  # Assign a new stock number based on the current inventory size
-            inventory.append(product_name)
-            inventory.append(stock_number)
+        inventory=inventory_check(inventory, product_name, stock_number)
         tax=calculate_tax(stock_number)
         totaltax+=tax
         delivery = process_delivery(delivery, stock_number)
@@ -100,5 +111,6 @@ while state != -1:
 
 # Print End Statistics
 save_inventory(inventory)
-print(inventory)
 generate_report(delivery, rejected, totaltax)
+for item in inventory:
+    print(f"{item['name']} History: {item['history']}"  )
