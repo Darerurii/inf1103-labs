@@ -15,7 +15,6 @@ def get_valid_input():
         # Process rejected entries count
         global rejected #makes rejected count a global variable so it can be accessed outside the function
         rejected += 1
-        state=-1
         return 0 
             
     else:
