@@ -22,5 +22,14 @@
         "history": [
             1
         ]
+    },
+    {
+        "id": "P004",
+        "name": "Keyboard",
+        "stock": 26,
+        "history": [
+            5,
+            21
+        ]
     }
 ]
