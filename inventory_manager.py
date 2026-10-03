@@ -13,7 +13,6 @@ def load_inventory():
     try:
         with open(INVENTORY_FILE, "r") as file:
             inventory = json.load(file)
-            print(inventory)
             return inventory
     except FileNotFoundError:
         return []    
@@ -78,7 +77,6 @@ def add_product(inventory, product_name, stock_number):
             "history": [stock_number]
         }
         inventory.append(new_item)
-        print(inventory)
         print(f"New Product Added: {new_item['name']}")
 
 def display_inventory(inventory):
