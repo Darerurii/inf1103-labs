@@ -1,0 +1,26 @@
+[
+    {
+        "id": "P001",
+        "name": "Laptop",
+        "stock": 300,
+        "history": [
+            300
+        ]
+    },
+    {
+        "id": "P002",
+        "name": "Mice",
+        "stock": 200,
+        "history": [
+            200
+        ]
+    },
+    {
+        "id": "P003",
+        "name": "CPU",
+        "stock": 1,
+        "history": [
+            1
+        ]
+    }
+]
