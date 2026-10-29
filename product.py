@@ -1,12 +1,3 @@
-rejected =0
-state = 0
-delivery = 0
-totaltax=0
-INVENTORY_FILE= "inventory.json"
-FIELD_SEPARATOR = ","
-HISTORY_SEPARATOR = "|"
-MENU_OPTIONS = ("1", "2", "3", "4", "5", "6")
-
 class Product:
     def __init__(self, product_id, name, price, stock, history=None):
         self.__product_id = product_id
