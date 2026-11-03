@@ -1,10 +1,16 @@
-class Product:
+from abc import ABC, abstractmethod
+ 
+class Product(ABC):
     def __init__(self, product_id, name, price, stock, history=None):
         self.__product_id = product_id
         self.__name = name
         self.__price = float(price)
         self.__stock = int(stock)
         self.__history = list(history) if history is not None else [self.__stock]
+
+    @abstractmethod
+    def placeholder(self):
+        pass
 
     def get_id(self):
         return self.__product_id
