@@ -37,7 +37,6 @@ class Product(ABC):
     def _validate_quantity(self, quantity):
         return isinstance(quantity, int) and quantity >= 0
     
-
     def display_information(self):
         print(self)
 
@@ -49,16 +48,6 @@ class Product(ABC):
             "stock": self.__stock,
             "history": list(self.__history),
         }
-
-    @classmethod
-    def from_dict(cls, data):
-        return cls(
-            data["id"],
-            data["name"],
-            data.get("price", 0.0),
-            data["stock"],
-            data.get("history", [data["stock"]]),
-        )
 
     def __str__(self):
         return (f"ID: {self.__product_id}, Name: {self.__name}, "
