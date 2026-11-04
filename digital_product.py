@@ -14,6 +14,9 @@ class DigitalProduct(Product):
         super().display_information()
         print(f"Download Size: {self.__download_size:.2f} MB")
 
+    def get_fulfilment_info(self) -> str:
+        return "Product delivered digitally."
+
     def to_dict(self):
         data = super().to_dict()
         data["type"] = self.TYPE

@@ -18,6 +18,9 @@ class PhysicalProduct(Product):
         super().display_information()
         print(f"Weight: {self.__weight:.2f} kg")
 
+    def get_fulfilment_info(self) -> str:
+        return "Product requires physical shipping."
+    
     def to_dict(self):
         data = super().to_dict()
         data["type"] = self.TYPE

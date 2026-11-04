@@ -9,8 +9,9 @@ class Product(ABC):
         self.__history = list(history) if history is not None else [self.__stock]
 
     @abstractmethod
-    def placeholder(self):
-        pass
+    def get_fulfilment_info(self) -> str:
+        """Return delivery/fulfilment information
+        for this product type."""
 
     def get_id(self):
         return self.__product_id
