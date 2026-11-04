@@ -19,6 +19,7 @@ class PhysicalProduct(Product, CanBeShipped):
         # Reuse parent display_information() 
         super().display_information()
         print(f"Weight: {self.__weight:.2f} kg")
+        print(f"Shipping Cost: ${self.calculate_shipping_cost():.2f}")
 
     def get_fulfilment_info(self) -> str:
         return "Product requires physical shipping."

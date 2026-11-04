@@ -1,6 +1,8 @@
+from digital_product import DigitalProduct
 from file_handling import FileHandling
 from inventory import Inventory
-from product import Product
+from physical_product import PhysicalProduct
+from product_logic import product_from_dict
 
 
 def get_product_name():
@@ -21,18 +23,49 @@ def get_quantity(prompt):
         return None
     return int(value)
  
- 
-def get_price():
-    value = input("Enter Price: ").strip()
+def get_float(prompt, label):
+    input_value = input(prompt).strip()
     try:
-        price = float(value)
+        value = float(input_value)
     except ValueError:
-        print("Invalid price. Please enter a number.")
+        print(f"Invalid {label}. Please enter a number.")
         return None
-    if price < 0:
-        print("Price cannot be negative.")
+    if value < 0:
+        # Capitalize instead of UPPER to ensure,
+        # only first letter is capitalized in the error message
+        print(f"{label.capitalize()} cannot be negative.")
         return None
-    return price
+    return value
+
+def get_price():
+    return get_float("Enter Price: ", "price")
+
+def get_product_type():
+    print("Select Product Type:")
+    print("  1. Physical Product")
+    print("  2. Digital Product")
+    choice = input("Enter type: ").strip()
+    if choice == "1":
+        return PhysicalProduct.TYPE
+    if choice == "2":
+        return DigitalProduct.TYPE
+    print("Invalid product type. Please enter 1 or 2.")
+    return None
+
+def create_product(product_type, product_id, name, price, quantity):
+    if product_type == PhysicalProduct.TYPE:
+        weight = get_float("Enter Weight (kg): ", "weight")
+        if weight is None:
+            return None
+        return PhysicalProduct(product_id, name, price, quantity, weight)
+
+    if product_type == DigitalProduct.TYPE:
+        size = get_float("Enter Download Size (MB): ", "download size")
+        if size is None:
+            return None
+        return DigitalProduct(product_id, name, price, quantity, size)
+
+    return None
 
 def add_product_menu(inventory):
     name = get_product_name()
@@ -49,13 +82,24 @@ def add_product_menu(inventory):
         inventory.update_stock(existing.get_id(), quantity)
         print(f"{existing.get_name()} already exists. Stock updated to {existing.get_stock()}.")
         return
-
+    
+    # Check for product type, price, and quantity only if the product does not already exist
+    product_type = get_product_type()
+    if product_type is None:
+        print("Invalid input. Product not added.")
+        return
+    
     price = get_price()
     quantity = get_quantity("Enter Quantity: ") if price is not None else None
     if price is None or quantity is None:
         print("Invalid input. Product not added.")
         return
-    product = Product(inventory.generate_id(), name, price, quantity)
+
+    product = create_product(product_type, inventory.generate_id(), name, price, quantity)
+    if product is None:
+        print("Invalid input. Product not added.")
+        return
+    
     inventory.add_product(product)
     print(f"New Product Added: {product.get_name()} (ID: {product.get_id()})")
 
@@ -76,7 +120,7 @@ def search_product_menu(inventory):
     product_id = input("Enter Product ID to search: ")
     product = inventory.search_product(product_id)
     if product:
-        print(f"Product Found: {product}")
+        product.display_information()
     else:
         print("Product not found.")
  
@@ -85,7 +129,16 @@ def save_inventory_menu(inventory, file_handler):
     data = [product.to_dict() for product in inventory.get_products()]
     if file_handler.save_file(data):
         print(f"Inventory saved to {file_handler.get_filename()} successfully.")
- 
+
+
+def load_inventory(inventory, file_handler):
+    for product_data in file_handler.load_file():
+        try:
+            inventory.add_product(product_from_dict(product_data))
+        except (KeyError, ValueError) as error:
+            #Ignore any errors when loading products from the file, 
+            # as they may be due to missing or invalid data
+            pass
  
 def show_menu():
     print("-------------Menu-------------")
@@ -100,12 +153,8 @@ def show_menu():
 def main():
     file_handler = FileHandling("inventory.json")
     inventory = Inventory()
-    saved_products = file_handler.load_file()
+    load_inventory(inventory, file_handler)
 
-    for product_data in saved_products:
-        product = Product.from_dict(product_data)
-        inventory.add_product(product)
- 
     while True:
         show_menu()
         choice = input("Enter option: ").strip()
