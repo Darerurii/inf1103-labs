@@ -1,6 +1,8 @@
+from can_be_shipped import CanBeShipped
 from product import Product
 
-class PhysicalProduct(Product):
+
+class PhysicalProduct(Product, CanBeShipped):
     TYPE = "physical"
     RATE_PER_KG = 2.00
 
@@ -20,6 +22,9 @@ class PhysicalProduct(Product):
 
     def get_fulfilment_info(self) -> str:
         return "Product requires physical shipping."
+    
+    def calculate_shipping_cost(self) -> float:
+        return self.RATE_PER_KG * self.__weight
     
     def to_dict(self):
         data = super().to_dict()
